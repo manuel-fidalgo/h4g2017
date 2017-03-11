@@ -11,13 +11,23 @@ public class MainWindow extends JFrame
 	Cell[][] matrix; 
 	int rows,cols;
 	ImageManager manager;
-	private static int DELAY = 20*1000;
+	private static int DELAY = 1*1000;
 	int edad;
+	JMenuBar bar;
+	JMenuItem item;
+	int segundos;
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	public MainWindow()
 	{
+		
+		segundos = 0;
+		bar = new JMenuBar();
+		bar.setBackground(Color.white);
+		item = new JMenuItem("");
+		bar.add(item);
+		setJMenuBar(bar);
 
 		rows = 14;
 		cols = 47;
@@ -43,9 +53,7 @@ public class MainWindow extends JFrame
 		g.setVgap(3);
 		JPanel p = new JPanel(g);
 
-
-
-
+		
 		Cell c;
 		for(int i=0; i<rows; i++){
 			for(int j=0; j<cols; j++){
@@ -61,7 +69,6 @@ public class MainWindow extends JFrame
 		}
 
 		this.add(p);
-		//System.out.println("Width-"+getWidth()+"Height"+getHeight());
 		avaliableRow(0);
 		Thread t = new Thread(new Runnable() {
 
@@ -69,7 +76,12 @@ public class MainWindow extends JFrame
 			public void run() {
 				for (int j = 0; j < matrix.length; j++) {
 					try {
-						Thread.sleep(DELAY);
+						for (int i = 0; i < 20; i++) {
+							Thread.sleep(DELAY);
+							segundos++;
+							item.setText("Segundos restantes para completar la fila: "+(20-segundos));
+						}
+						segundos = 0;
 					} catch (InterruptedException e) {
 						System.err.println("Hilo interrumplido");
 					}
@@ -77,7 +89,6 @@ public class MainWindow extends JFrame
 				}
 				//Insertar final test
 				calcularResultado();
-
 			}
 
 		});
@@ -163,7 +174,8 @@ public class MainWindow extends JFrame
 				+ "tasa_concentracion = %f\n",omisiones,comisiones,total_respuestas,total_aciertos,
 				total_preguntas,total_fallos,efectividad,tasa_concentracion);
 		
-		ImageIcon icon = new ImageIcon("Resources/icon.png");
+		ImageIcon icon = new ImageIcon("Source/icon.png");
+		
 		JOptionPane.showMessageDialog(null, pre, "Resultados", 1, icon);
 		dispose();
 	}
