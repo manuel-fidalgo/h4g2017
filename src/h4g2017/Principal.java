@@ -78,23 +78,22 @@ public class Principal {
 		JMenuItem juego_1 = new JMenuItem("Juego 1");
 		juego_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Runtime.getRuntime().exec("arduino/juegoImpulsividad/juegoImpulsividad.ino");
-				} catch (IOException f) {
-					f.printStackTrace();
-					
-				}
+				try{
+					Process p = Runtime.getRuntime().exec("C:\\Program Files (x86)\\Arduino\\arduino arduino/juegoImpulsividad/juegoImpulsividad.ino");
+					} catch  ( IOException er){
+						System.out.println("Error uploadling the program to the arduino");
+					}
 			}
 		});
 		
 		JMenuItem juego_2 = new JMenuItem("Juego 2");
 		juego_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Runtime.getRuntime().exec("arduino/juegoRepetirLeds/juegoRepetirLeds.ino");
-				} catch (IOException f) {
-					f.printStackTrace();
-				}
+				try{
+					Process p = Runtime.getRuntime().exec("C:\\Program Files (x86)\\Arduino\\arduino arduino/juegoRepetirleds/juegoRepetirleds.ino");
+					} catch  ( IOException er){
+						System.out.println("Error uploadling the program to the arduino");
+					}
 			}
 		});
 		
