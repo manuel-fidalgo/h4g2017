@@ -6,7 +6,11 @@ int estadoBoton = 0;
 // Los pines donde están conectados los leds
 int posLeds[5]={3,4,5,6,7};
 
-int pinInterruptor = 8;
+int pinInterruptor = 2;
+
+int estadoLed = 0;
+
+volatile bool interrupt = false;
 
 void setup() {
     pinMode(posLeds[0], OUTPUT);
@@ -15,10 +19,17 @@ void setup() {
     pinMode(posLeds[3], OUTPUT);
     pinMode(posLeds[4], OUTPUT);
 
-    pinMode(pinInterruptor, OUTPUT);
+    pinMode(8, OUTPUT);
+
+    pinMode(pinInterruptor, INPUT);
+
+    attachInterrupt(digitalPinToInterrupt(pinInterruptor), comprobarImpulsividad, RISING );
+
+    //pinMode(pinInterruptor, OUTPUT);
 }
 
 void loop() {
+   digitalWrite(pinInterruptor, LOW);
     delay(1000);
     nRepeticiones = calcularCicloLedAleatorio();
     ejecutarCiclo(nRepeticiones);
@@ -44,32 +55,29 @@ int calcularCicloLedAleatorio(){
 void ejecutarCiclo( int n ){
     // Vamos encendiendo los leds
     for ( int i = 0; i < n ;i++){
-    digitalWrite(i+3,HIGH);
-    delay(200);
-    
-    // Comprobamos si se ha precipitado
-    if ( comprobarImpulsividad() ) {
-      finalizarCiclo(n);
-      return;
-    } 
-    // Si no se ha precipitado continuamos la ejecución
-    delay(500);
+        if ( interrupt == true){
+            digitalWrite(8,HIGH);
+            delay(1000);
+            digitalWrite(8,LOW);  
+            finalizarCiclo(n);
+            interrupt = false;
+            return;
+                  
+        }
+        
+        digitalWrite(i+3,HIGH);
+        delay(200);        
+        // Si no se ha precipitado continuamos la ejecución
+        delay(500);
     }
     
     // Hasta aquí se habrían encendido los leds correspondientes, esperamos 2 segundos al usuario
     delay(2000);
+    if ( interrupt == true ){
+        finalizarCiclo(n);
+        ejecutarCicloExito();
+    }
     
-    // Hemos esperado, comprobamos si ha pulsado
-    estadoBoton = analogRead(A0);
-    if ( estadoBoton < 1000  ) {
-        ejecutarCicloExito();         // Ha pulsado, borramos el estado de los leds
-    }
-    else {                            // No ha pulsado, enecendemos el led rojo
-        digitalWrite(8,HIGH);
-        delay(1000);
-        digitalWrite(8,LOW);
-        estadoBoton = 0;
-    }
     finalizarCiclo(n);
     
 }
@@ -93,16 +101,8 @@ void ejecutarCicloExito(){
 
 
 // Si usa el botón antes de tiempo fallará y encenderá el botón rojo
-bool comprobarImpulsividad() {
-    estadoBoton = analogRead(A0);
-    if ( estadoBoton < 1000  ) {
-      digitalWrite(8,HIGH);
-      delay(1000);
-      digitalWrite(8,LOW);
-      estadoBoton = 0;
-      return true;
-    } else {
-      return false;
-    }
+void comprobarImpulsividad() {
+    interrupt = true;
+    
 }
 
